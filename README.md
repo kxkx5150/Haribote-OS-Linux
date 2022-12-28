@@ -18,7 +18,7 @@ ubuntu22.04 で multiple definition で
 <br><br><br>
 
 <pre>
-sudo apt install build-essential manpages-dev libc6-dev-i386 qemu ghex nasm mtools
+sudo apt install build-essential manpages-dev libc6-dev-i386 qemu ghex nasm mtools clang-format
 </pre>
 
 <br><br><br>
