@@ -1,0 +1,57 @@
+APILIBPATH = ../apilib/
+DEMOSPATH = ../demos/
+DOCKERFILEPATH = ../
+
+default :
+	make $(APP).hrb
+
+# Cファイルをリンカスクリプトを用いてコンパイルする（アプリ）
+$(APP).hrb: $(DEMOSPATH)har_app.ld $(APILIBPATH)apilib.a $(APP).o apilib.h ../app_make.txt
+	ld --allow-multiple-definition -Map=$(APP).map -m elf_i386 -e HariMain -o $(APP).hrb -T $(DEMOSPATH)har_app.ld $(APP).o $(APILIBPATH)apilib.a
+
+
+# コマンド
+.PHONY: asm
+asm:
+	$(MAKE) ipl10.bin
+.PHONY: img
+img:
+	$(MAKE) ${OSIMAGE}
+.PHONY: run
+run:
+	$(MAKE) img
+	qemu-system-i386 -drive file=${OSIMAGE},format=raw,if=floppy
+.PHONY: debug
+debug:
+	make img
+	qemu-system-i386 -drive file=${OSIMAGE},format=raw,if=floppy -gdb tcp::10000 -S
+.PHONY: srcimg
+srcimg:
+	$(RM) *.bin
+	$(RM) *.hrb
+	$(RM) *.sys
+	$(RM) *.lst
+	$(RM) *.map
+	$(RM) hankaku.c
+	$(RM) convHankakuTxt
+	$(RM) *.o
+	$(RM) *.a
+.PHONY: clean
+clean:
+	make srcimg
+	$(RM) *.img
+
+
+.PHONY: docker-build
+docker-build: $(DOCKERFILEPATH)Dockerfile
+	docker build -t ${OSBUILDER}
+
+.PHONY: docker-make
+docker-make:
+	make docker-build
+	docker run -it --rm -v $(CURDIR):/${OSNAME} -w /${OSNAME} ${OSBUILDER} make img
+
+.PHONY: docker-run
+docker-run:
+	make docker-make
+	qemu-system-i386 -m 32m -enable-kvm -drive file=${OSIMAGE},format=raw,if=floppy
