@@ -5,7 +5,7 @@ https://github.com/nhayato/30OS
 
 <br><br><br>
 
-[有用な link](%E6%9C%89%E7%94%A8%E3%81%AAlink.md)
+[勉強link](https://qiita.com/kxkx5150/items/c6a71610c98c0c68f542)
 
 <br><br><br>
 
